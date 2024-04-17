@@ -1,0 +1,283 @@
+
+I2C.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000001a6  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .stab         00000480  00000000  00000000  000001fc  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  2 .stabstr      00000397  00000000  00000000  0000067c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 2a 00 	jmp	0x54	; 0x54 <__ctors_end>
+   4:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   8:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  10:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  14:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  18:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  1c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  20:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  24:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  28:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  2c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  30:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  34:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  38:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  3c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  40:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  44:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  48:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  4c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  50:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+
+00000054 <__ctors_end>:
+  54:	11 24       	eor	r1, r1
+  56:	1f be       	out	0x3f, r1	; 63
+  58:	cf e5       	ldi	r28, 0x5F	; 95
+  5a:	d8 e0       	ldi	r29, 0x08	; 8
+  5c:	de bf       	out	0x3e, r29	; 62
+  5e:	cd bf       	out	0x3d, r28	; 61
+  60:	0e 94 c8 00 	call	0x190	; 0x190 <main>
+  64:	0c 94 d1 00 	jmp	0x1a2	; 0x1a2 <_exit>
+
+00000068 <__bad_interrupt>:
+  68:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+0000006c <TWI_vidInit>:
+#include "I2C_prv.h"
+
+
+
+void TWI_vidInit(void)
+{
+  6c:	df 93       	push	r29
+  6e:	cf 93       	push	r28
+  70:	cd b7       	in	r28, 0x3d	; 61
+  72:	de b7       	in	r29, 0x3e	; 62
+	TWBR = 52;
+  74:	e0 e2       	ldi	r30, 0x20	; 32
+  76:	f0 e0       	ldi	r31, 0x00	; 0
+  78:	84 e3       	ldi	r24, 0x34	; 52
+  7a:	80 83       	st	Z, r24
+	TWCR |=(1<<TWEN);
+  7c:	a6 e5       	ldi	r26, 0x56	; 86
+  7e:	b0 e0       	ldi	r27, 0x00	; 0
+  80:	e6 e5       	ldi	r30, 0x56	; 86
+  82:	f0 e0       	ldi	r31, 0x00	; 0
+  84:	80 81       	ld	r24, Z
+  86:	84 60       	ori	r24, 0x04	; 4
+  88:	8c 93       	st	X, r24
+
+}
+  8a:	cf 91       	pop	r28
+  8c:	df 91       	pop	r29
+  8e:	08 95       	ret
+
+00000090 <TWI_Start>:
+void TWI_Start(void)
+{
+  90:	df 93       	push	r29
+  92:	cf 93       	push	r28
+  94:	cd b7       	in	r28, 0x3d	; 61
+  96:	de b7       	in	r29, 0x3e	; 62
+
+TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTA);
+  98:	e6 e5       	ldi	r30, 0x56	; 86
+  9a:	f0 e0       	ldi	r31, 0x00	; 0
+  9c:	84 ea       	ldi	r24, 0xA4	; 164
+  9e:	80 83       	st	Z, r24
+while(!(TWCR&(1<<TWINT)));
+  a0:	e6 e5       	ldi	r30, 0x56	; 86
+  a2:	f0 e0       	ldi	r31, 0x00	; 0
+  a4:	80 81       	ld	r24, Z
+  a6:	88 23       	and	r24, r24
+  a8:	dc f7       	brge	.-10     	; 0xa0 <TWI_Start+0x10>
+
+}
+  aa:	cf 91       	pop	r28
+  ac:	df 91       	pop	r29
+  ae:	08 95       	ret
+
+000000b0 <TWI_Stop>:
+void TWI_Stop(void)
+{
+  b0:	df 93       	push	r29
+  b2:	cf 93       	push	r28
+  b4:	cd b7       	in	r28, 0x3d	; 61
+  b6:	de b7       	in	r29, 0x3e	; 62
+
+TWCR=(1<<TWINT)|(1<<TWEN)|(1<<TWSTO);
+  b8:	e6 e5       	ldi	r30, 0x56	; 86
+  ba:	f0 e0       	ldi	r31, 0x00	; 0
+  bc:	84 e9       	ldi	r24, 0x94	; 148
+  be:	80 83       	st	Z, r24
+}
+  c0:	cf 91       	pop	r28
+  c2:	df 91       	pop	r29
+  c4:	08 95       	ret
+
+000000c6 <TWI_SendSA_R>:
+void TWI_SendSA_R(u8 SA)
+{
+  c6:	df 93       	push	r29
+  c8:	cf 93       	push	r28
+  ca:	0f 92       	push	r0
+  cc:	cd b7       	in	r28, 0x3d	; 61
+  ce:	de b7       	in	r29, 0x3e	; 62
+  d0:	89 83       	std	Y+1, r24	; 0x01
+TWDR= SA<<1|0x01;
+  d2:	e3 e2       	ldi	r30, 0x23	; 35
+  d4:	f0 e0       	ldi	r31, 0x00	; 0
+  d6:	89 81       	ldd	r24, Y+1	; 0x01
+  d8:	88 2f       	mov	r24, r24
+  da:	90 e0       	ldi	r25, 0x00	; 0
+  dc:	88 0f       	add	r24, r24
+  de:	99 1f       	adc	r25, r25
+  e0:	81 60       	ori	r24, 0x01	; 1
+  e2:	80 83       	st	Z, r24
+TWCR=(1<<TWINT)|(1<<TWEN);
+  e4:	e6 e5       	ldi	r30, 0x56	; 86
+  e6:	f0 e0       	ldi	r31, 0x00	; 0
+  e8:	84 e8       	ldi	r24, 0x84	; 132
+  ea:	80 83       	st	Z, r24
+while(!(TWCR & (1<<TWINT)));
+  ec:	e6 e5       	ldi	r30, 0x56	; 86
+  ee:	f0 e0       	ldi	r31, 0x00	; 0
+  f0:	80 81       	ld	r24, Z
+  f2:	88 23       	and	r24, r24
+  f4:	dc f7       	brge	.-10     	; 0xec <TWI_SendSA_R+0x26>
+}
+  f6:	0f 90       	pop	r0
+  f8:	cf 91       	pop	r28
+  fa:	df 91       	pop	r29
+  fc:	08 95       	ret
+
+000000fe <TWI_SendSA_W>:
+void TWI_SendSA_W(u8 SA)
+{
+  fe:	df 93       	push	r29
+ 100:	cf 93       	push	r28
+ 102:	0f 92       	push	r0
+ 104:	cd b7       	in	r28, 0x3d	; 61
+ 106:	de b7       	in	r29, 0x3e	; 62
+ 108:	89 83       	std	Y+1, r24	; 0x01
+	TWDR = SA<<1;
+ 10a:	e3 e2       	ldi	r30, 0x23	; 35
+ 10c:	f0 e0       	ldi	r31, 0x00	; 0
+ 10e:	89 81       	ldd	r24, Y+1	; 0x01
+ 110:	88 0f       	add	r24, r24
+ 112:	80 83       	st	Z, r24
+	TWCR = (1<<TWINT)|(1<<TWEN);
+ 114:	e6 e5       	ldi	r30, 0x56	; 86
+ 116:	f0 e0       	ldi	r31, 0x00	; 0
+ 118:	84 e8       	ldi	r24, 0x84	; 132
+ 11a:	80 83       	st	Z, r24
+	while(!(TWCR&(1<<TWINT)));
+ 11c:	e6 e5       	ldi	r30, 0x56	; 86
+ 11e:	f0 e0       	ldi	r31, 0x00	; 0
+ 120:	80 81       	ld	r24, Z
+ 122:	88 23       	and	r24, r24
+ 124:	dc f7       	brge	.-10     	; 0x11c <TWI_SendSA_W+0x1e>
+}
+ 126:	0f 90       	pop	r0
+ 128:	cf 91       	pop	r28
+ 12a:	df 91       	pop	r29
+ 12c:	08 95       	ret
+
+0000012e <CheckStatus>:
+u8 CheckStatus(u8 Status)
+{
+ 12e:	df 93       	push	r29
+ 130:	cf 93       	push	r28
+ 132:	00 d0       	rcall	.+0      	; 0x134 <CheckStatus+0x6>
+ 134:	cd b7       	in	r28, 0x3d	; 61
+ 136:	de b7       	in	r29, 0x3e	; 62
+ 138:	89 83       	std	Y+1, r24	; 0x01
+	if((TWSR&0xf8)==Status)
+ 13a:	e1 e2       	ldi	r30, 0x21	; 33
+ 13c:	f0 e0       	ldi	r31, 0x00	; 0
+ 13e:	80 81       	ld	r24, Z
+ 140:	88 2f       	mov	r24, r24
+ 142:	90 e0       	ldi	r25, 0x00	; 0
+ 144:	9c 01       	movw	r18, r24
+ 146:	28 7f       	andi	r18, 0xF8	; 248
+ 148:	30 70       	andi	r19, 0x00	; 0
+ 14a:	89 81       	ldd	r24, Y+1	; 0x01
+ 14c:	88 2f       	mov	r24, r24
+ 14e:	90 e0       	ldi	r25, 0x00	; 0
+ 150:	28 17       	cp	r18, r24
+ 152:	39 07       	cpc	r19, r25
+ 154:	19 f4       	brne	.+6      	; 0x15c <CheckStatus+0x2e>
+	{return 1 ;}
+ 156:	81 e0       	ldi	r24, 0x01	; 1
+ 158:	8a 83       	std	Y+2, r24	; 0x02
+ 15a:	01 c0       	rjmp	.+2      	; 0x15e <CheckStatus+0x30>
+	else
+	{return 0;}
+ 15c:	1a 82       	std	Y+2, r1	; 0x02
+ 15e:	8a 81       	ldd	r24, Y+2	; 0x02
+
+}
+ 160:	0f 90       	pop	r0
+ 162:	0f 90       	pop	r0
+ 164:	cf 91       	pop	r28
+ 166:	df 91       	pop	r29
+ 168:	08 95       	ret
+
+0000016a <TWI_Receive>:
+u8 TWI_Receive(void)
+{
+ 16a:	df 93       	push	r29
+ 16c:	cf 93       	push	r28
+ 16e:	cd b7       	in	r28, 0x3d	; 61
+ 170:	de b7       	in	r29, 0x3e	; 62
+TWCR =(1<<TWINT)|(1<<TWEN);
+ 172:	e6 e5       	ldi	r30, 0x56	; 86
+ 174:	f0 e0       	ldi	r31, 0x00	; 0
+ 176:	84 e8       	ldi	r24, 0x84	; 132
+ 178:	80 83       	st	Z, r24
+while(!(TWCR&(1<<TWINT)));
+ 17a:	e6 e5       	ldi	r30, 0x56	; 86
+ 17c:	f0 e0       	ldi	r31, 0x00	; 0
+ 17e:	80 81       	ld	r24, Z
+ 180:	88 23       	and	r24, r24
+ 182:	dc f7       	brge	.-10     	; 0x17a <TWI_Receive+0x10>
+return TWDR;
+ 184:	e3 e2       	ldi	r30, 0x23	; 35
+ 186:	f0 e0       	ldi	r31, 0x00	; 0
+ 188:	80 81       	ld	r24, Z
+
+}
+ 18a:	cf 91       	pop	r28
+ 18c:	df 91       	pop	r29
+ 18e:	08 95       	ret
+
+00000190 <main>:
+ */
+
+#include "LIB/typ.h"
+#include "I2C_Interface.h"
+int main ()
+{
+ 190:	df 93       	push	r29
+ 192:	cf 93       	push	r28
+ 194:	cd b7       	in	r28, 0x3d	; 61
+ 196:	de b7       	in	r29, 0x3e	; 62
+ 198:	80 e0       	ldi	r24, 0x00	; 0
+ 19a:	90 e0       	ldi	r25, 0x00	; 0
+
+}
+ 19c:	cf 91       	pop	r28
+ 19e:	df 91       	pop	r29
+ 1a0:	08 95       	ret
+
+000001a2 <_exit>:
+ 1a2:	f8 94       	cli
+
+000001a4 <__stop_program>:
+ 1a4:	ff cf       	rjmp	.-2      	; 0x1a4 <__stop_program>
